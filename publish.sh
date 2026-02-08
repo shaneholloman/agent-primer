@@ -25,6 +25,13 @@ if ! bun run check; then
     exit 1
 fi
 
+# Build the project
+echo "Building project..."
+if ! bun run build; then
+    echo "Error: Build failed"
+    exit 1
+fi
+
 # Bump version
 echo "Bumping $VERSION_TYPE version..."
 if ! npm version "$VERSION_TYPE"; then
