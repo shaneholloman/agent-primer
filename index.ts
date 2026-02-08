@@ -140,10 +140,6 @@ async function main() {
 		process.exit(0);
 	}
 
-	if (args.dangerousMode) {
-		logger.warn("DANGEROUS MODE: Permission checks will be skipped\n");
-	}
-
 	if (args.clearRecent) {
 		try {
 			if (clearCache()) {
@@ -224,8 +220,14 @@ async function main() {
 	let selectedItems: PrimitiveItem[] = [];
 
 	while (true) {
-		console.log(`\n  \x1b[1m\x1b[7m Agent Primer \x1b[0m\n`);
-		console.log(`  ${countLines}\n`);
+		console.log(`\n  \x1b[1m\x1b[46m\x1b[30m Agent Primer \x1b[0m\n`);
+		console.log(`  ${countLines}`);
+		if (args.dangerousMode) {
+			console.log(
+				`  \x1b[2mDANGEROUS MODE: Permission checks will be skipped\x1b[0m`,
+			);
+		}
+		console.log();
 
 		// Present a separate picker per primitive type
 		selectedItems = [];
@@ -248,6 +250,7 @@ async function main() {
 				message: `\x1b[1m\x1b[7m ${label} \x1b[0m`,
 				options,
 				required: false,
+				maxItems: 10,
 			});
 
 			if (isCancel(selected)) {
