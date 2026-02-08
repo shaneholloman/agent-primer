@@ -6,7 +6,7 @@ import {
 	statSync,
 } from "node:fs";
 import { homedir } from "node:os";
-import { basename, dirname, join } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import matter from "gray-matter";
 import pino from "pino";
 import type {
@@ -106,9 +106,12 @@ export class SkillPrimitive implements Primitive {
 			if (item) items.push(item);
 		}
 
-		for (const path of discoverSkillPaths(LOCAL_SKILLS_DIR)) {
-			const item = parseSkill(path, "local");
-			if (item) items.push(item);
+		// Skip local scan if it resolves to the same directory as global
+		if (resolve(LOCAL_SKILLS_DIR) !== resolve(GLOBAL_SKILLS_DIR)) {
+			for (const path of discoverSkillPaths(LOCAL_SKILLS_DIR)) {
+				const item = parseSkill(path, "local");
+				if (item) items.push(item);
+			}
 		}
 
 		return items;

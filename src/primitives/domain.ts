@@ -6,7 +6,7 @@ import {
 	statSync,
 } from "node:fs";
 import { homedir } from "node:os";
-import { basename, dirname, join } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import matter from "gray-matter";
 import pino from "pino";
 import type {
@@ -106,9 +106,12 @@ export class DomainPrimitive implements Primitive {
 			if (item) items.push(item);
 		}
 
-		for (const path of discoverDomainPaths(LOCAL_DOMAINS_DIR)) {
-			const item = parseDomain(path, "local");
-			if (item) items.push(item);
+		// Skip local scan if it resolves to the same directory as global
+		if (resolve(LOCAL_DOMAINS_DIR) !== resolve(GLOBAL_DOMAINS_DIR)) {
+			for (const path of discoverDomainPaths(LOCAL_DOMAINS_DIR)) {
+				const item = parseDomain(path, "local");
+				if (item) items.push(item);
+			}
 		}
 
 		return items;
