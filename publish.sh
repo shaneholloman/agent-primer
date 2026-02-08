@@ -18,17 +18,10 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-# Run checks (format, lint, type-check)
+# Run checks (format, lint)
 echo "Running checks..."
-if ! npm run check; then
+if ! bun run check; then
     echo "Error: Checks failed"
-    exit 1
-fi
-
-# Build the project
-echo "Building project..."
-if ! npm run build; then
-    echo "Error: Build failed"
     exit 1
 fi
 
@@ -40,7 +33,7 @@ if ! npm version "$VERSION_TYPE"; then
 fi
 
 # Get the new version
-NEW_VERSION=$(node -p "require('./package.json').version")
+NEW_VERSION=$(bun -e "const pkg = await Bun.file('./package.json').json(); console.log(pkg.version)")
 
 # Push to git
 echo "Pushing to git..."
@@ -51,9 +44,9 @@ fi
 
 # Publish to npm
 echo "Publishing to npm..."
-if ! npm publish --access public; then
+if ! bun publish --access public; then
     echo "Error: Failed to publish to npm"
     exit 1
 fi
 
-echo "✔ Successfully published version $NEW_VERSION"
+echo "Successfully published version $NEW_VERSION"
