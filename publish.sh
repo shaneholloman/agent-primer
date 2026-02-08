@@ -49,24 +49,11 @@ if ! { git push && git push --tags; }; then
     exit 1
 fi
 
-# Publish to npm (primary: agent-primer)
-echo "Publishing agent-primer to npm..."
+# Publish to npm
+echo "Publishing to npm..."
 if ! bun publish --access public; then
-    echo "Error: Failed to publish agent-primer to npm"
+    echo "Error: Failed to publish to npm"
     exit 1
 fi
-
-# Publish alias (agent-prime) to hold the namespace
-echo "Publishing agent-prime alias to npm..."
-bun -e "
-const pkg = await Bun.file('./package.json').json();
-pkg.name = 'agent-prime';
-pkg.bin['agent-prime'] = pkg.bin['agent-primer'];
-await Bun.write('./package.json', JSON.stringify(pkg, null, '\t') + '\n');
-"
-if ! bun publish --access public; then
-    echo "Warning: Failed to publish agent-prime alias to npm"
-fi
-git checkout package.json
 
 echo "Successfully published version $NEW_VERSION"
